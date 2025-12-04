@@ -1,0 +1,25 @@
+# メール設定
+mail:
+  host: imap.gmail.com
+  port: 993
+  check_interval_minutes: 30  # cron実行間隔（分）
+
+# フィルター条件
+filters:
+  - type: "subject"  # フィルタータイプ: subject（件名の前方一致）, subject_partial（件名の部分一致）, from（送信元）
+    condition: "prefix"  # subject時のみ: prefix（前方一致）, partial（部分一致）
+    value: "【重要】"  # フィルタリング条件の値
+  # 例: 送信元でフィルタする場合
+  # - type: "from"
+  #   value: "example@gmail.com"
+
+# 通知設定
+notifiers:
+  discord:
+    enabled: true
+    channel_id: null  # チャンネルID（Webhook URLで指定済みの場合はnullでも可）
+    message_template: |
+      📧 **新着メール通知**
+      **件名:** {subject}
+      **受信日時:** {date}
+      **送信者:** {from}

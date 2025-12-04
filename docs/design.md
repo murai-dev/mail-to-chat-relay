@@ -4,18 +4,32 @@
 メールを検知してチャットサービスに通知するプログラム。
 特定の件名を持つメールを受信したら、Discordなどのチャットサービスに自動通知する。
 
-## 要件
 
-### 機能要件
-- 特定条件のメールを検知（件名の前方一致など）
-- チャットサービスに通知を送信
-- 30分に1回メールボックスをチェック
-- 過去一定時間内（デフォルト60分）に受信したメールのみを処理対象とする
+## 補足: 改善・運用・自動化
 
-### 非機能要件
-- **保守性**: 拡張性を考慮した設計（将来的にSlack、LINE対応を容易に追加可能）
-- **運用性**: 設定ファイルで動作を制御可能（コード変更不要）
-- **可搬性**: Docker環境で動作（環境依存を最小化）
+### crontab自動生成
+- Dockerコンテナ起動時に `settings.yaml` の `check_interval_minutes` から自動でcrontabを生成
+- 実行間隔を変更したい場合は `settings.yaml` を編集し、コンテナ再起動で反映
+- サポート間隔: 1分, 15分, 30分, 60分（他はエラー）
+
+### 設定例（抜粋）
+```yaml
+mail:
+  check_interval_minutes: 30
+filters:
+  - type: "subject"
+    condition: "prefix"
+    value: "【重要】"
+notifiers:
+  discord:
+    enabled: true
+    message_template: "新着: {subject} (送信者: {from})"
+```
+
+### 運用フロー
+1. 設定ファイル編集
+2. Dockerコンテナ再起動
+3. crontab自動生成・cron起動
 
 ### 技術選定
 - **実装言語**: Python 3.11+
@@ -113,9 +127,12 @@ mail:
   host: imap.gmail.com
   port: 993
   check_period_minutes: 60  # 過去何分間のメールをチェックするか
-  
+  check_interval_minutes: 30  # cron実行間隔（分）
+
 filters:
-  subject_prefix: "【重要】"  # 件名の前方一致条件
+  - type: "subject"
+    condition: "prefix"
+    value: "【重要】"
 
 notifiers:
   discord:

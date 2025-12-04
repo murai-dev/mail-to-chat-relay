@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mail-relay:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    container_name: mail-to-chat-relay
+    env_file:
+      - ../.env
+    volumes:
+      # 設定ファイルをマウント（編集可能にする）
+      - ../config/settings.yaml:/app/config/settings.yaml:ro
+      # ログをホストに保存
+      - ./logs:/var/log
+    restart: unless-stopped
+    # タイムゾーンを設定
+    environment:
+      - TZ=Asia/Tokyo

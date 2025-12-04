@@ -1,0 +1,18 @@
+# 環境設定
+SHELL=/bin/sh
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Mail-to-Chat Relay 実行設定
+# settings.yamlの check_interval_minutes に応じてcron設定を変更してください
+# 
+# 30分ごとに実行する場合:
+*/30 * * * * root cd /app && python3 src/main.py >> /var/log/mail-relay.log 2>&1
+#
+# 60分ごとに実行する場合:
+# 0 * * * * root cd /app && python3 src/main.py >> /var/log/mail-relay.log 2>&1
+#
+# 15分ごとに実行する場合:
+# */15 * * * * root cd /app && python3 src/main.py >> /var/log/mail-relay.log 2>&1
+
+# 空行が必要(cronの仕様)
+
